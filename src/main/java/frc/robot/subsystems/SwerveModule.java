@@ -5,11 +5,9 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.can.TalonFX;
-import com.ctre.phoenix.sensors.CANCoder;
-import com.revrobotics.CANEncoder;
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.ctre.phoenix.motorcontrol.can.TalonFX; 
+import com.ctre.phoenix.sensors.SensorInitializationStrategy;
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -26,8 +24,8 @@ public class SwerveModule extends SubsystemBase {
   private final TalonFX driveMotor;
   private final TalonFX turningMotor;
 
-  private final CANCoder driveEncoder;
-  private final CANCoder turningEncoder;
+  // private final CANCoder driveEncoder;
+  // private final CANCoder turningEncoder;
 
   private final PIDController turningPidController;
 
@@ -46,13 +44,10 @@ public class SwerveModule extends SubsystemBase {
             driveMotor.setInverted(driveMotorReversed);
             turningMotor.setInverted(turningMotorReversed);
 
-            driveEncoder = new CANCoder(driveMotorID);
-            turningEncoder = new CANCoder(turningMotorID);
-
-            driveEncoder.setPositionConversionFactor(ControlMode.Position, ModuleConstants.kDriveEncoderRot2Meter);
-            driveEncoder.setVelocityConversionFactor(ModuleConstants.kDriveEncoderRPM2MeterPerSec);
-            turningEncoder.setPositionConversionFactor(ModuleConstants.kTurningEncoderRot2Rad);
-            turningEncoder.setVelocityConversionFactor(ModuleConstants.kTurningEncoderRPM2RadPerSec);
+            // driveEncoder.setPositionConversionFactor(ModuleConstants.kDriveEncoderRot2Meter);
+            // driveEncoder.setVelocityConversionFactor(ModuleConstants.kDriveEncoderRPM2MeterPerSec);
+            // turningEncoder.setPositionConversionFactor(ModuleConstants.kTurningEncoderRot2Rad);
+            // turningEncoder.setVelocityConversionFactor(ModuleConstants.kTurningEncoderRPM2RadPerSec);
 
             turningPidController = new PIDController(ModuleConstants.kPTurning, 0, 0);
             turningPidController.enableContinuousInput(-Math.PI, Math.PI);
@@ -62,19 +57,19 @@ public class SwerveModule extends SubsystemBase {
   
 
   public double getDrivePosition(){
-    return driveEncoder.getPosition();
+    return driveMotor.getSelectedSensorPosition() * ModuleConstants.kDriveEncoderRot2Meter;//checks to see if it works when testing the chassis
   }
 
   public double getTurningPosition(){
-    return turningEncoder.getPosition();
+    return turningMotor.getSelectedSensorPosition() * ModuleConstants.kTurningEncoderRot2Rad;//check to see if it works when testing the chassis
   }
 
   public double getDriveVelocity(){
-    return driveEncoder.getVelocity();
+    return driveMotor.getSelectedSensorVelocity() * ModuleConstants.kDriveEncoderRPM2MeterPerSec;//check to see if it works when testing the chassis
   }
 
   public double getTurningVelocity(){
-    return turningEncoder.getVelocity();
+    return turningMotor.getSelectedSensorVelocity() * ModuleConstants.kTurningEncoderRPM2RadPerSec;//check to see if it works when testing the chassis
   }
   public double getAbsoluteEncoderRad(){
     double angle = absoluteEncoder.getVoltage() / RobotController.getVoltage5V();
@@ -85,8 +80,8 @@ public class SwerveModule extends SubsystemBase {
   }
 
   public void resetEncoders(){
-    driveEncoder.setPosition(0);
-    turningEncoder.setPosition(getAbsoluteEncoderRad());
+    driveMotor.setSelectedSensorPosition(0);
+    turningMotor.setSelectedSensorPosition(getAbsoluteEncoderRad());
   }
 
   public SwerveModuleState getState() {
