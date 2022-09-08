@@ -13,6 +13,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.AnalogInput;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -29,14 +30,14 @@ public class SwerveModule extends SubsystemBase {
 
   private final PIDController turningPidController;
 
-  private AnalogInput absoluteEncoder;
+  private DigitalInput absoluteEncoder;
   private final boolean absoluteEncoderReversed;
   private final double absoluteEncoderOffsetRad;
   public SwerveModule(int driveMotorID, int turningMotorID, boolean driveMotorReversed, boolean turningMotorReversed, 
           int absoluteEncoderId, double absoluteEncoderOffset, boolean absoluteEncoderReversed) {
             this.absoluteEncoderOffsetRad = absoluteEncoderOffset;
             this.absoluteEncoderReversed = absoluteEncoderReversed;
-            absoluteEncoder = new AnalogInput(absoluteEncoderId);
+            absoluteEncoder = new DigitalInput(absoluteEncoderId);
 
             driveMotor = new TalonFX(driveMotorID);
             turningMotor = new TalonFX(turningMotorID);
@@ -57,10 +58,12 @@ public class SwerveModule extends SubsystemBase {
   
 
   public double getDrivePosition(){
+    System.out.println("This is the Sensor Driving Position" + driveMotor.getSelectedSensorPosition() * ModuleConstants.kDriveEncoderRot2Meter);
     return driveMotor.getSelectedSensorPosition() * ModuleConstants.kDriveEncoderRot2Meter;//checks to see if it works when testing the chassis
   }
 
   public double getTurningPosition(){
+    System.out.println("This is the Sensor Turning Position" + turningMotor.getSelectedSensorPosition() * ModuleConstants.kTurningEncoderRot2Rad);
     return turningMotor.getSelectedSensorPosition() * ModuleConstants.kTurningEncoderRot2Rad;//check to see if it works when testing the chassis
   }
 
