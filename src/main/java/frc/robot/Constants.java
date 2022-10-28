@@ -17,81 +17,65 @@ import edu.wpi.first.math.util.Units;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-    public static final class DriveConstants{
+    public static final class chassisConstants{
 
-    // TRANSLATE ALL THE CONSTANTS FOR OUR SWERVE DRIVE CHASSIS
-        public static final double kTrackWidth = Units.inchesToMeters(11.375);//Change the distance for this 
-        // Distance between right and left wheels
-        public static final double kWheelBase = Units.inchesToMeters(13.5625);//Change the distance for this
-        // Distance between front and back wheels
-        public static final SwerveDriveKinematics kDriveKinematics = new SwerveDriveKinematics(
-                new Translation2d(kWheelBase / 2, -kTrackWidth / 2),//Revise
-                new Translation2d(kWheelBase / 2, kTrackWidth / 2),//Revise
-                new Translation2d(-kWheelBase / 2, -kTrackWidth / 2),//Revise
-                new Translation2d(-kWheelBase / 2, kTrackWidth / 2));//Revise
+        public static double deadband = 0.15;
 
-        public static final int kFrontLeftDriveMotorPort = 1;// Has been revised adjust the motor controllers at the lab
-        public static final int kBackLeftDriveMotorPort = 5;// Has been revised adjust the motor controllers at the lab
-        public static final int kFrontRightDriveMotorPort = 3;//Has been revised adjust the motor controllers at the lab
-        public static final int kBackRightDriveMotorPort = 7;//Has been revised adjust the motor controllers at the lab
+        public static double kS = (0.667 / 12);//Test and revise if need
+        public static double kV = (2.44 / 12);//Test and revise if need
+        public static double kA = (0.27 / 12);//Test and revise if need
 
-        public static final int kFrontLeftTurningMotorPort = 2;//Has been revised adjust the motor controllers at the lab
-        public static final int kBackLeftTurningMotorPort = 6;//Has been revised adjust the motor controllers at the lab
-        public static final int kFrontRightTurningMotorPort = 4;//Has been revised adjust the motor controllers at the lab
-        public static final int kBackRightTurningMotorPort = 8;//Has been revised adjust the motor controllers at the lab
+        public static double driveMotorGearRat = (6.54 / 1);
+        public static double turnMotorGearRat = (7.13 / 1); 
+        public static final double wheelDiameter = Units.inchesToMeters(4);
+        public static double circumference = wheelDiameter * Math.PI;
 
-        public static final boolean kFrontLeftTurningEncoderReversed = false;//Revise when at the lab
-        public static final boolean kBackLeftTurningEncoderReversed = false;//Revise when at the lab
-        public static final boolean kFrontRightTurningEncoderReversed = false;//Revise when at the lab
-        public static final boolean kBackRightTurningEncoderReversed = false;//Revise when at the lab
+        public static double maxSpeedMPS = 4.5;
+        public static double maxTurnSpeed = 2.0;
+        
+        //Distance between the front and back wheels
+        public static final double wheelBase = (13.5625);
+        //Distance between left and right wheels
+        public static final double trackWidth = (11.375);
 
-        public static final boolean kFrontLeftDriveEncoderReversed = false;//Revise when at the lab
-        public static final boolean kBackLeftDriveEncoderReversed = false;//Revise when at the lab
-        public static final boolean kFrontRightDriveEncoderReversed = false;//Revise when at the lab
-        public static final boolean kBackRightDriveEncoderReversed = false;//Revise when at the lab
+        public static final SwerveDriveKinematics swerveKinematics = new SwerveDriveKinematics(
+            new Translation2d(wheelBase / 2.0, trackWidth / 2.0),
+            new Translation2d(wheelBase / 2.0, -trackWidth / 2.0),
+            new Translation2d(-wheelBase / 2.0, trackWidth / 2.0),
+            new Translation2d(-wheelBase / 2.0, -trackWidth / 2.0));
 
-        public static final int kFrontLeftDriveAbsoluteEncoderPort = 0;//Revise at the lab if needed
-        public static final int kBackLeftDriveAbsoluteEncoderPort = 2;//Revise at the lab if needed
-        public static final int kFrontRightDriveAbsoluteEncoderPort = 1;//Revise at the lab if needed
-        public static final int kBackRightDriveAbsoluteEncoderPort = 3;//Revise at the lab if needed
-
-        public static final boolean kFrontLeftDriveAbsoluteEncoderReversed = false;//Revise at the lab
-        public static final boolean kBackLeftDriveAbsoluteEncoderReversed = false;//Revise at the lab
-        public static final boolean kFrontRightDriveAbsoluteEncoderReversed = false;//Revise at the lab
-        public static final boolean kBackRightDriveAbsoluteEncoderReversed = false;//Revise ta the lab
-
-        public static final double kFrontLeftDriveAbsoluteEncoderOffsetRad = -0.254;//Revise at the lab
-        public static final double kBackLeftDriveAbsoluteEncoderOffsetRad = -1.252;//Revise at the lab
-        public static final double kFrontRightDriveAbsoluteEncoderOffsetRad = -1.816;//Revise at the lab
-        public static final double kBackRightDriveAbsoluteEncoderOffsetRad = -4.811;//Revise at the lab
-
-        public static final double kPhysicalMaxSpeedMetersPerSecond = 8;//Revise
-        public static final double kPhysicalMaxAngularSpeedRadiansPerSecond = 2 * 2 * Math.PI;//Revise
-
-        public static final double kTeleDriveMaxSpeedMetersPerSecond = kPhysicalMaxSpeedMetersPerSecond / 4;//Revise
-        public static final double kTeleDriveMaxAngularSpeedRadiansPerSecond = //Revise
-                kPhysicalMaxAngularSpeedRadiansPerSecond / 4;
-        public static final double kTeleDriveMaxAccelerationUnitsPerSecond = 0.5;//Revise if needed check back at the video
-        public static final double kTeleDriveMaxAngularAccelerationUnitsPerSecond = 0.5;//Revise if needed check back at the video
     }
-    public static final class ModuleConstants{
-        public static final double kWheelDiameterMeters = Units.inchesToMeters(4);//Has been revised double check with the 3D design or at the lab
-        public static final double kDriveMotorGearRatio = 12 / 24;//Revise at the lab
-        public static final double kTurningMotorGearRatio = 22 / 24;//Revise at the lab
-        public static final double kDriveEncoderRot2Meter = kDriveMotorGearRatio * Math.PI * kWheelDiameterMeters;
-        public static final double kTurningEncoderRot2Rad = kTurningMotorGearRatio * 2 * Math.PI;
-        public static final double kDriveEncoderRPM2MeterPerSec = kDriveEncoderRot2Meter / 60;
-        public static final double kTurningEncoderRPM2RadPerSec = kTurningEncoderRot2Rad / 60;
-        public static final double kPTurning = 0.5;//check to see if needs to be revised
-    }
-    public static final class OIConstants{
-        public static final int kDriverControllerPort = 0;
+    public static final class chassisSetUp{
+        //Front Left Module
+        public static final int fLeftDriveMotorPort = 1;
+        public static final int fLeftTurnMotorPort = 2;
+        public static final boolean isFrontLeftDriveMotorReverse = true;
+        public static final boolean isFrontLeftTurnMotorReverse = true;
+        public static final int fLeftAbsoluteEncoder = 0;
+        
 
-        // public static final int kDriverYAxis = 1;
-        // public static final int kDriverXAxis = 0;
-        // public static final int kDriverRotAxis = 4;
-        // public static final int kDriverFieldOrientedButtonIdx = 1;
+        //Front Right Module
+        public static final int fRightDriveMotorPort = 3;
+        public static final int fRightTurnMotorPort = 4;
+        public static final boolean isFrontRightDriveMotorReverse = true;
+        public static final boolean isFrontRightTurnMotorReverse = true;
+        public static final int fRightAbsoluteEncoder = 1;
 
-        public static final double kDeadband = 0.05;//Check to see if needs to be revised
+        //Back Right Module
+        public static final int bRightDriveMotorPort = 5;
+        public static final int bRightTurnMotorPort = 6;
+        public static final boolean isBackRightDriveMotorReverse = true;
+        public static final boolean isBackRightTurnMotorReverse = true;
+        public static final int bRightAbsoluteEncoder = 2;
+
+        //Back Left Module
+        public static final int bLeftDriveMotorPort = 7;
+        public static final int bLeftTurnMotorPort = 8;
+        public static final boolean isBackLeftDriveMotorReverse = true;
+        public static final boolean isBackLeftTurnMotorReverse = true;
+        public static final int bLeftAbsoluteEncoder = 3;
+
+        //Gyro
+        public static final boolean invertedGyro = false;
     }
 }

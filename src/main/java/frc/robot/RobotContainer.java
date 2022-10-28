@@ -6,8 +6,8 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
-import frc.robot.Constants.OIConstants;
 import frc.robot.commands.SwerveJoystickCmd;
+import frc.robot.subsystems.SwerveModule;
 import frc.robot.subsystems.SwerveSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 
@@ -19,16 +19,17 @@ import edu.wpi.first.wpilibj2.command.Command;
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
+  private final XboxController driver = new XboxController(0);
   private final SwerveSubsystem swerveSubsystem = new SwerveSubsystem();
-  private final XboxController driver = new XboxController(OIConstants.kDriverControllerPort);
 
-  //private final ExampleCommand m_autoCommand = new ExampleCommand(m_exampleSubsystem);
+  //private final SwerveJoystickCmd m_autoCommand = new SwerveJoystickCmd(swerveSubsystem);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+    boolean fieldRelative = true;
+    swerveSubsystem.setDefaultCommand(new SwerveJoystickCmd(swerveSubsystem, driver, fieldRelative));
     // Configure the button bindings
     configureButtonBindings();
-    swerveSubsystem.setDefaultCommand(new SwerveJoystickCmd(swerveSubsystem, () -> driver.getLeftX(), () -> driver.getLeftY(), () -> driver.getRightX(), () ->driver.getXButton()));
   }
 
   /**

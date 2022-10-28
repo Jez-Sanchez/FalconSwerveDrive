@@ -3,35 +3,36 @@
 // the WPILib BSD license file in the root directory of this project.
 
 package frc.robot.subsystems;
-import com.ctre.phoenix.sensors.Pigeon2;
+
 import com.ctre.phoenix.sensors.WPI_Pigeon2;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.DriveConstants;
+import frc.robot.Constants;
+import frc.robot.Constants.chassisConstants;
+import frc.robot.Constants.chassisSetUp;
 
 public class SwerveSubsystem extends SubsystemBase {
-  /** Creates a new SwerveSubsystem. */
-  private final SwerveModule frontLeft = new SwerveModule(DriveConstants.kFrontLeftDriveMotorPort, DriveConstants.kFrontLeftTurningMotorPort, DriveConstants.kFrontLeftDriveEncoderReversed, 
-  DriveConstants.kFrontLeftTurningEncoderReversed, DriveConstants.kFrontLeftDriveAbsoluteEncoderPort, DriveConstants.kFrontLeftDriveAbsoluteEncoderOffsetRad, 
-  DriveConstants.kFrontLeftDriveAbsoluteEncoderReversed);
+  private final SwerveModule frontLeft = new SwerveModule(chassisSetUp.fLeftDriveMotorPort, chassisSetUp.isFrontLeftDriveMotorReverse, 
+  chassisSetUp.fLeftTurnMotorPort, chassisSetUp.isFrontLeftTurnMotorReverse, chassisSetUp.fLeftAbsoluteEncoder);
 
-  private final SwerveModule frontRight = new SwerveModule(DriveConstants.kFrontRightDriveMotorPort, DriveConstants.kFrontRightTurningMotorPort, DriveConstants.kFrontRightDriveEncoderReversed, 
-  DriveConstants.kFrontRightTurningEncoderReversed, DriveConstants.kFrontRightDriveAbsoluteEncoderPort, DriveConstants.kFrontRightDriveAbsoluteEncoderOffsetRad, 
-  DriveConstants.kFrontRightDriveAbsoluteEncoderReversed);
+  private final SwerveModule frontRight = new SwerveModule(chassisSetUp.fRightDriveMotorPort, chassisSetUp.isFrontRightDriveMotorReverse, 
+  chassisSetUp.fRightTurnMotorPort, chassisSetUp.isFrontRightTurnMotorReverse, chassisSetUp.fRightAbsoluteEncoder);
 
-  private final SwerveModule backLeft = new SwerveModule(DriveConstants.kBackLeftDriveMotorPort, DriveConstants.kBackLeftTurningMotorPort, DriveConstants.kBackLeftDriveEncoderReversed, 
-  DriveConstants.kBackLeftTurningEncoderReversed, DriveConstants.kBackLeftDriveAbsoluteEncoderPort, DriveConstants.kBackLeftDriveAbsoluteEncoderOffsetRad, 
-  DriveConstants.kBackLeftDriveAbsoluteEncoderReversed);
+  private final SwerveModule backLeft = new SwerveModule(chassisSetUp.bLeftDriveMotorPort, chassisSetUp.isBackLeftDriveMotorReverse, 
+  chassisSetUp.bLeftTurnMotorPort, chassisSetUp.isBackLeftTurnMotorReverse, chassisSetUp.bLeftAbsoluteEncoder);
 
-  private final SwerveModule backRight = new SwerveModule(DriveConstants.kBackRightDriveMotorPort, DriveConstants.kBackRightTurningMotorPort, DriveConstants.kBackRightDriveEncoderReversed, 
-  DriveConstants.kBackRightTurningEncoderReversed, DriveConstants.kBackRightDriveAbsoluteEncoderPort, DriveConstants.kBackRightDriveAbsoluteEncoderOffsetRad, 
-  DriveConstants.kBackRightDriveAbsoluteEncoderReversed);
+  private final SwerveModule backRight = new SwerveModule(chassisSetUp.bRightDriveMotorPort, chassisSetUp.isBackRightDriveMotorReverse, 
+  chassisSetUp.bRightTurnMotorPort, chassisSetUp.isBackRightTurnMotorReverse, chassisSetUp.bRightAbsoluteEncoder);
 
   private WPI_Pigeon2 gyro = new WPI_Pigeon2(0);
+  SwerveDriveOdometry swerveOdometry = new SwerveDriveOdometry(chassisConstants.swerveKinematics, getYaw());
 
   public SwerveSubsystem() {
     new Thread(() -> {
@@ -58,17 +59,41 @@ public class SwerveSubsystem extends SubsystemBase {
     // This method will be called once per scheduler run
     SmartDashboard.putNumber("Robot Heading", getHeading());
   }
-  public void stopModules(){
-    frontLeft.stop();
-    frontRight.stop();
-    backLeft.stop();
-    backRight.stop();
-  }
-  public void setModuleStates(SwerveModuleState[] desiredStates){
-    SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, DriveConstants.kPhysicalMaxSpeedMetersPerSecond);
-    frontLeft.setDesiredState(desiredStates[0]);
-    frontRight.setDesiredState(desiredStates[1]);
-    backLeft.setDesiredState(desiredStates[2]);
-    backRight.setDesiredState(desiredStates[3]);
-  }
+  // public void stopModules(){
+  //   frontLeft.stop();
+  //   frontRight.stop();
+  //   backLeft.stop();
+  //   backRight.stop();
+  // }
+  
+  public void drive(Translation2d translation, double rotation, boolean fieldRelative) {
+    SwerveModuleState[] swerveModuleStates =
+        Constants.chassisConstants.swerveKinematics.toSwerveModuleStates(
+            fieldRelative ? ChassisSpeeds.fromFieldRelativeSpeeds(
+                                translation.getX(), 
+                                translation.getY(), 
+                                rotation, 
+                                getYaw()
+                            )
+                            : new ChassisSpeeds(
+                                translation.getX(), 
+                                translation.getY(), 
+                                rotation)
+                            );
+    SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, chassisConstants.maxSpeedMPS);
+    frontLeft.setDesiredState(swerveModuleStates[0]);
+    frontRight.setDesiredState(swerveModuleStates[1]);
+    backLeft.setDesiredState(swerveModuleStates[2]);
+    backRight.setDesiredState(swerveModuleStates[3]);
+    System.out.println("Front Left Module State: " + frontLeft.getState().angle);
+    System.out.println("Front Right Module State: " + frontRight.getState().angle);
+    System.out.println("Back Left Module State: " + backLeft.getState().angle);
+    System.out.println("Back Right Module State: " + backRight.getState().angle);
+  }    
+  
+  public Rotation2d getYaw() {
+    double[] ypr = new double[3];
+    gyro.getYawPitchRoll(ypr);
+    return (chassisSetUp.invertedGyro) ? Rotation2d.fromDegrees(360 - ypr[0]) : Rotation2d.fromDegrees(ypr[0]);
+}
 }
