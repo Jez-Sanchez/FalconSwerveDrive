@@ -4,6 +4,7 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
@@ -17,9 +18,13 @@ public class SwerveJoystickCmd extends CommandBase {
   private double rotation;
   private Translation2d translation;
   private boolean fieldRelative;
+  private boolean overrideJS;
   
   private SwerveSubsystem swerve;
   private XboxController driver;
+  private SlewRateLimiter yLim = new SlewRateLimiter(3);
+  private SlewRateLimiter xLim = new SlewRateLimiter(1);
+  private SlewRateLimiter rotLim = new SlewRateLimiter(1);
 
   /**
    * Creates a new ExampleCommand.
@@ -45,10 +50,21 @@ public class SwerveJoystickCmd extends CommandBase {
     double yAxis = -driver.getLeftY();
     double xAxis = -driver.getLeftX();
     double rotAxis = -driver.getRightX();
+    if(Math.abs(rotAxis) > chassisConstants.deadband){
+      overrideJS = true;
+    }
+    else if (Math.abs(rotAxis) < chassisConstants.deadband){
+      overrideJS = false;
+    }
 
-    yAxis = (Math.abs(yAxis) < chassisConstants.deadband ? 0 : yAxis * 0.3);
-    xAxis = (Math.abs(xAxis) < chassisConstants.deadband ? 0 : xAxis * 0.3);
-    rotAxis = (Math.abs(rotAxis) < chassisConstants.deadband ? 0 : rotAxis * 0.3);
+    yAxis = (Math.abs(yAxis) < chassisConstants.deadband ? 0 : yLim.calculate(yAxis * 0.3));
+    if(overrideJS == false){
+      xAxis = (Math.abs(xAxis) < chassisConstants.deadband ? 0 : xLim.calculate(xAxis * 0.3));
+    }
+    else if(overrideJS == true){
+      xAxis = 0;
+    }
+    rotAxis = (Math.abs(rotAxis) < chassisConstants.deadband ? 0 : rotLim.calculate(rotAxis * 0.3));
 
     translation = new Translation2d(yAxis, xAxis).times(chassisConstants.maxSpeedMPS);
     rotation = rotAxis * chassisConstants.maxTurnSpeed;

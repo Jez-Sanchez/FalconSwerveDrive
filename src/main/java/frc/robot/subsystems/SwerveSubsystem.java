@@ -20,16 +20,16 @@ import frc.robot.Constants.chassisSetUp;
 
 public class SwerveSubsystem extends SubsystemBase {
   private final SwerveModule frontLeft = new SwerveModule(chassisSetUp.fLeftDriveMotorPort, chassisSetUp.isFrontLeftDriveMotorReverse, 
-  chassisSetUp.fLeftTurnMotorPort, chassisSetUp.isFrontLeftTurnMotorReverse, chassisSetUp.fLeftAbsoluteEncoder);
+  chassisSetUp.fLeftTurnMotorPort, chassisSetUp.isFrontLeftTurnMotorReverse, chassisSetUp.fLeftAbsoluteEncoder, chassisSetUp.frontLAngle,chassisSetUp.frontLKP, chassisSetUp.frontLKI, chassisSetUp.frontLKD);
 
   private final SwerveModule frontRight = new SwerveModule(chassisSetUp.fRightDriveMotorPort, chassisSetUp.isFrontRightDriveMotorReverse, 
-  chassisSetUp.fRightTurnMotorPort, chassisSetUp.isFrontRightTurnMotorReverse, chassisSetUp.fRightAbsoluteEncoder);
+  chassisSetUp.fRightTurnMotorPort, chassisSetUp.isFrontRightTurnMotorReverse, chassisSetUp.fRightAbsoluteEncoder, chassisSetUp.frontRAngle, chassisSetUp.frontRKP, chassisSetUp.frontRKI, chassisSetUp.frontRKD);
 
   private final SwerveModule backLeft = new SwerveModule(chassisSetUp.bLeftDriveMotorPort, chassisSetUp.isBackLeftDriveMotorReverse, 
-  chassisSetUp.bLeftTurnMotorPort, chassisSetUp.isBackLeftTurnMotorReverse, chassisSetUp.bLeftAbsoluteEncoder);
+  chassisSetUp.bLeftTurnMotorPort, chassisSetUp.isBackLeftTurnMotorReverse, chassisSetUp.bLeftAbsoluteEncoder, chassisSetUp.backLAngle, chassisSetUp.backLKP, chassisSetUp.backLKI, chassisSetUp.backLKD);
 
   private final SwerveModule backRight = new SwerveModule(chassisSetUp.bRightDriveMotorPort, chassisSetUp.isBackRightDriveMotorReverse, 
-  chassisSetUp.bRightTurnMotorPort, chassisSetUp.isBackRightTurnMotorReverse, chassisSetUp.bRightAbsoluteEncoder);
+  chassisSetUp.bRightTurnMotorPort, chassisSetUp.isBackRightTurnMotorReverse, chassisSetUp.bRightAbsoluteEncoder, chassisSetUp.backRAngle, chassisSetUp.backRKP, chassisSetUp.backRKI, chassisSetUp.backRKD);
 
   private WPI_Pigeon2 gyro = new WPI_Pigeon2(0);
   SwerveDriveOdometry swerveOdometry = new SwerveDriveOdometry(chassisConstants.swerveKinematics, getYaw());
@@ -58,6 +58,11 @@ public class SwerveSubsystem extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
     SmartDashboard.putNumber("Robot Heading", getHeading());
+    SmartDashboard.putNumber("FrontL Angle: ", frontLeft.getState().angle.getDegrees());
+    SmartDashboard.putNumber("FrontR Angle: ", frontRight.getState().angle.getDegrees());
+    SmartDashboard.putNumber("BackL Angle: ", backLeft.getState().angle.getDegrees());
+    SmartDashboard.putNumber("BackR Angle: ", backRight.getState().angle.getDegrees());
+
   }
   // public void stopModules(){
   //   frontLeft.stop();
@@ -85,10 +90,6 @@ public class SwerveSubsystem extends SubsystemBase {
     frontRight.setDesiredState(swerveModuleStates[1]);
     backLeft.setDesiredState(swerveModuleStates[2]);
     backRight.setDesiredState(swerveModuleStates[3]);
-    System.out.println("Front Left Module State: " + frontLeft.getState().angle);
-    System.out.println("Front Right Module State: " + frontRight.getState().angle);
-    System.out.println("Back Left Module State: " + backLeft.getState().angle);
-    System.out.println("Back Right Module State: " + backRight.getState().angle);
   }    
   
   public Rotation2d getYaw() {
