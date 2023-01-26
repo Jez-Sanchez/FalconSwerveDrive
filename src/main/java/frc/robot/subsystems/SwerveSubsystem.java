@@ -21,6 +21,8 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryUtil;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -42,11 +44,12 @@ public class SwerveSubsystem extends SubsystemBase {
   private final SwerveModule backRight = new SwerveModule(chassisSetUp.bRightDriveMotorPort, chassisSetUp.isBackRightDriveMotorReverse, 
   chassisSetUp.bRightTurnMotorPort, chassisSetUp.isBackRightTurnMotorReverse, chassisSetUp.bRightAbsoluteEncoder, chassisSetUp.backRAngle, chassisSetUp.backRKP, chassisSetUp.backRKI, chassisSetUp.backRKD);
 
-  private WPI_Pigeon2 gyro = new WPI_Pigeon2(0);
+  private WPI_Pigeon2 gyro = new WPI_Pigeon2(1);
   //SwerveDriveOdometry swerveOdometry = new SwerveDriveOdometry(chassisConstants.swerveKinematics, getYaw(), getModulePositions());
   SwerveDriveOdometry swerveOdometry = new SwerveDriveOdometry(chassisConstants.swerveKinematics, new Rotation2d(), getModulePositions());
   private SwerveModuleState[] swerveModuleStates;
   //public static PhotonCamera tracker = new PhotonCamera("tracker");
+  public static NetworkTable limelight = NetworkTableInstance.getDefault().getTable("limelight");
 
   public SwerveSubsystem() {
     new Thread(() -> {

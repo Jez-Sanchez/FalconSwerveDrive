@@ -9,21 +9,21 @@ import org.photonvision.PhotonCamera;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.SwerveSubsystem;
 
 public class AlignRobot extends CommandBase {
   private PIDController turn = new PIDController(0.03, 0, 12);
   private SwerveSubsystem swerve;
-  private PhotonCamera tracker;
+  private NetworkTable limelight;
   private double rotationSpeed;
   private boolean fieldRelative;
   private Translation2d translation = new Translation2d(0, 0);
-  private SlewRateLimiter rotationLimit = new SlewRateLimiter(0.5);
   /** Creates a new AlignRobot. */
-  public AlignRobot(SwerveSubsystem swerve, PhotonCamera camera, boolean fieldRelative) {
+  public AlignRobot(SwerveSubsystem swerve, NetworkTable camera, boolean fieldRelative) {
     this.swerve = swerve;
-    tracker = camera;
+    limelight = camera;
     this.fieldRelative = fieldRelative;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(swerve);
@@ -31,26 +31,25 @@ public class AlignRobot extends CommandBase {
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+
+  }
 
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    var result = tracker.getLatestResult();
+    double offsetX = limelight.getEntry("tx").getDouble(0.0);
 
-    if(result.hasTargets()){
+    if(limelight.getEntry("tv").getDouble(0) == 1){
       //rotationSpeed = turn.calculate(result.getBestTarget().getYaw(), 0);
-      rotationSpeed = rotationLimit.calculate(turn.calculate(result.getBestTarget().getYaw(), 0));
+      rotationSpeed = turn.calculate(offsetX, 0);
       System.out.println("Rotation Speed: " + rotationSpeed);
     }
     // else{
     //   rotationSpeed = 0;
     // }
     swerve.drive(translation, rotationSpeed, fieldRelative);
-    if(result.getBestTarget().getYaw() == 0){
-      end(true);
-    }
   }
 
   // Called once the command ends or is interrupted.
@@ -61,6 +60,9 @@ public class AlignRobot extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
+    if(rotationSpeed == 0){
+      return true;
+    }
     return false;
   }
 }

@@ -4,6 +4,9 @@
 
 package frc.robot;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
@@ -56,6 +59,7 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     // An ExampleCommand will run in autonomous
     PathPlannerTrajectory path1 = PathPlanner.loadPath("PathGroup1", new PathConstraints(4, 3));
+    List<PathPlannerTrajectory> pathGroup1 = PathPlanner.loadPathGroup("PathGroup1", 3, 2);
     return new SequentialCommandGroup(new InstantCommand(() -> swerveSubsystem.resetOdometry(path1.getInitialHolonomicPose())),
     new PPSwerveControllerCommand(path1, swerveSubsystem::getPose, chassisConstants.swerveKinematics, 
     new PIDController(0.3, 0, 0), new PIDController(0.3, 0, 0), 

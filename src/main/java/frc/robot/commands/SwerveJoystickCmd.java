@@ -22,8 +22,8 @@ public class SwerveJoystickCmd extends CommandBase {
   
   private SwerveSubsystem swerve;
   private XboxController driver;
-  private SlewRateLimiter yLim = new SlewRateLimiter(3);
-  private SlewRateLimiter xLim = new SlewRateLimiter(2);
+  private SlewRateLimiter yLim = new SlewRateLimiter(1);
+  private SlewRateLimiter xLim = new SlewRateLimiter(1);
   private SlewRateLimiter rotLim = new SlewRateLimiter(1);
 
   /**
@@ -57,10 +57,10 @@ public class SwerveJoystickCmd extends CommandBase {
     translation = new Translation2d(yAxis, xAxis).times(chassisConstants.maxSpeedMPS);
     rotation = rotAxis * chassisConstants.maxTurnSpeed;
     swerve.drive(translation, rotAxis, fieldRelative);
-    if(xAxis == 0 && yAxis == 0 && rotAxis == 0){
-      swerve.zeroModules();
-      swerve.stopModules();
-    }
+    // if(xAxis == 0 && yAxis == 0 && rotAxis == 0){
+    //   swerve.zeroModules();
+    //   swerve.stopModules();
+    // }
   }
 
   // Called once the command ends or is interrupted.

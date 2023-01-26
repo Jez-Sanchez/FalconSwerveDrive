@@ -57,8 +57,8 @@ public class SwerveModule extends SubsystemBase {
 
     //turnMotor.configIntegratedSensorAbsoluteRange(AbsoluteSensorRange.Unsigned_0_to_360);
 
-    driveMotor.setNeutralMode(NeutralMode.Brake);
-    turnMotor.setNeutralMode(NeutralMode.Brake);
+    driveMotor.setNeutralMode(NeutralMode.Coast);
+    turnMotor.setNeutralMode(NeutralMode.Coast);
 
     // turnMotor.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
 
@@ -77,14 +77,14 @@ public class SwerveModule extends SubsystemBase {
     turnMotor.config_kI(0, kI);
     turnMotor.config_kD(0, kD);
 
-    //resetEncoder();
+    resetEncoder();
   }
 
-  // public void resetEncoder(){
-  //   driveMotor.setSelectedSensorPosition(0);
-  //   absoluteEncoder.reset();
-  //   turnMotor.setSelectedSensorPosition(degreesToFalcons(getTurnAngle().getDegrees(), chassisConstants.turnMotorGearRat));
-  // }
+  public void resetEncoder(){
+     driveMotor.setSelectedSensorPosition(0);
+     absoluteEncoder.reset();
+     turnMotor.setSelectedSensorPosition(degreesToFalcons(getTurnAngle().getDegrees(), chassisConstants.turnMotorGearRat));
+   }
   public Rotation2d getTurnAngle(){
     return new Rotation2d((2 * Math.PI/(2048 * chassisConstants.turnMotorGearRat)) * (turnMotor.getSelectedSensorPosition() % (2048 * chassisConstants.turnMotorGearRat)));
   }
